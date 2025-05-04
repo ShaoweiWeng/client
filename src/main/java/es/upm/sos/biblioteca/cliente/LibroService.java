@@ -46,14 +46,13 @@ public class LibroService {
 				.bodyToMono(Libro.class).block();
 
 		if (libro != null) {
-			if (libro.get_links() != null) {
-				Href selfLink = libro.get_links().getSelf();
-				if (selfLink != null) {
-					System.out.println("Enlace: " + selfLink.getHref());
-				} else {
-					System.out.println("El libro no tiene enlace 'self'.");
-				}
-			}
+			System.out.println("El libro con id: " + libro.getId() + " y titulo: " + libro.getTitulo());
+			System.out.println("Autores: " + libro.getAutores());
+			System.out.println("ISBN: " + libro.getIsbn());
+			System.out.println("Edicion: " + libro.getEdicion());
+			System.out.println("Editorial: " + libro.getEditorial());
+			System.out.println("Disponible: " + libro.isDisponible());
+			System.out.println("**********************");
 		} else {
 			System.out.println("Libro no encontrado.");
 		}
