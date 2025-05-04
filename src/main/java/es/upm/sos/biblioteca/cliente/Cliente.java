@@ -1,66 +1,74 @@
 package es.upm.sos.biblioteca.cliente;
+
 import es.upm.sos.biblioteca.cliente.model.Libro;
-import es.upm.sos.biblioteca.cliente.model.PageLibro;
 
 public class Cliente {
-    static LibroService service = new LibroService();
+	static LibroService service = new LibroService();
 
-    public static void main(String[] args) {
-        testAddLibro();
-        testGetLibro();
-        testDeleteLibro();
-        testUpdateLibro();
-        testGetLibrosFiltered();
-    }
+	public static void main(String[] args) {
+		testAddLibro();
+		testGetLibro();
+		testDeleteLibro();
+		testUpdateLibro();
+		testGetLibrosFiltered();
+	}
 
-    private static void testAddLibro() {
-        // Test 201 Created
-        Libro libroValido = new Libro("Curso de programación Java", "Mariona Nadal", 
-                                    "edicion", "9788441543249", "ANAYA MULTIMEDIA");
-        System.out.println("#### Add libro válido (201) ####");
-        System.out.println(service.addLibro(libroValido));
+	private static void testAddLibro() {
+		// Test 201 Created
+		Libro libroValido1 = new Libro("Curso de programación Java", "Mariona Nadal", "3ª edición", "9788441543249",
+				"ANAYA MULTIMEDIA");
+		Libro libroValido2 = new Libro("Libro2", "Autor2", "2ª edición", "9788441542222", "Editorial2");
+		System.out.println("#### Add libro válido (201) ####");
+		service.addLibro(libroValido1);
+		service.addLibro(libroValido2);
+		System.out.println();
 
-        // Test 400 Bad Request
-        Libro libroInvalido = new Libro(null, "Autor", "edicion", "ISBN", "Editorial");
-        System.out.println("#### Add libro inválido (400) ####");
-        System.out.println(service.addLibro(libroInvalido));
-    }
+		// Test 400 Bad Request
+		Libro libroInvalido = new Libro(null, "Autor", "edicion", "ISBN", "Editorial");
+		System.out.println("#### Add libro inválido (400) ####");
+		service.addLibro(libroInvalido);
+		System.out.println();
+	}
 
-    private static void testGetLibro() {
-        // Test 200 OK
-        System.out.println("#### Get libro existente (200) ####");
-        System.out.println(service.getLibroById(1));
+	private static void testGetLibro() {
+		// Test 200 OK
+		System.out.println("#### Get libro existente (200) ####");
+		service.getLibroById(1);
+		System.out.println();
 
-        // Test 404 Not Found
-        System.out.println("#### Get libro inexistente (404) ####");
-        System.out.println(service.getLibroById(999));
-    }
+		// Test 404 Not Found
+		System.out.println("#### Get libro inexistente (404) ####");
+		service.getLibroById(404);
+		System.out.println();
+	}
 
-    private static void testDeleteLibro() {
-        // Test 204 No Content
-        System.out.println("#### Delete libro existente (204) ####");
-        System.out.println(service.deleteLibro(1));
+	private static void testDeleteLibro() {
+		// Test 204 No Content
+		System.out.println("#### Delete libro existente (204) ####");
+		service.deleteLibro(2);
+		System.out.println();
 
-        // Test 404 Not Found
-        System.out.println("#### Delete libro inexistente (404) ####");
-        System.out.println(service.deleteLibro(999));
-    }
+		// Test 404 Not Found
+		System.out.println("#### Delete libro inexistente (404) ####");
+		service.deleteLibro(404);
+		System.out.println();
+	}
 
-    private static void testUpdateLibro() {
-        Libro libroActualizado = new Libro("Nuevo título", "Nuevo autor", 
-                                         "edicion", null, "Nueva editorial");
-        // Test 204 No Content
-        System.out.println("#### Update libro existente (204) ####");
-        System.out.println(service.updateLibro(1, libroActualizado));
+	private static void testUpdateLibro() {
+		// Test 204 No Content
+		System.out.println("#### Update libro existente (204) ####");
+		service.updateLibro(1, "Nuevo titulo", "Nuevo autor", "Nueva edicion", "ISBN", "Nueva editorial");
+		System.out.println();
 
-        // Test 404 Not Found
-        System.out.println("#### Update libro inexistente (404) ####");
-        System.out.println(service.updateLibro(999, libroActualizado));
-    }
+		// Test 404 Not Found
+		System.out.println("#### Update libro inexistente (404) ####");
+		service.updateLibro(999, "Nuevo titulo", "Nuevo autor", "Nueva edicion", "ISBN", "Nueva editorial");
+		System.out.println();
+	}
 
-    private static void testGetLibrosFiltered() {
-        System.out.println("#### Get libros filtrados (200) ####");
-        PageLibro pagina = service.getLibrosFiltered("Java", true, 0, 10);
-        System.out.println("Total libros: " + pagina.getPage().getTotalElements());
-    }
+	private static void testGetLibrosFiltered() {
+		System.out.println("#### Get libros filtrados (200) ####");
+		service.getLibrosFiltered(0, 2);
+		System.out.println();
+	}
 }

@@ -5,80 +5,123 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import es.upm.sos.biblioteca.cliente.model.*;
-
 import reactor.core.publisher.Mono;
 
 public class LibroService {
-    private WebClient webClient = WebClient.builder()
-            .baseUrl("http://localhost:8080/libro")
-            .build();
+	private WebClient webClient = WebClient.builder().baseUrl("http://localhost:8080/api/libro").build();
 
-    public String addLibro(Libro libro) {
-        try {
-            return webClient.post()
-                    .uri("/")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(Mono.just(libro), Libro.class)
-                    .retrieve()
-                    .onStatus(HttpStatusCode::is4xxClientError, response -> 
-                        response.bodyToMono(String.class)
-                                .doOnNext(body -> System.err.println("Error 4xx: " + body))
-                                .then(Mono.empty()))
-                    .onStatus(HttpStatusCode::is5xxServerError, response -> 
-                        response.bodyToMono(String.class)
-                                .doOnNext(body -> System.err.println("Error 5xx: " + body))
-                                .then(Mono.empty()))
-                    .toBodilessEntity()
-                    .map(response -> response.getHeaders().getLocation().toString())
-                    .block();
-        } catch (Exception e) {
-            System.err.println("Error en addLibro: " + e.getMessage());
-            return null;
-        }
-    }
+	public void addLibro(Libro libro) {
+		try {
+			String referencia = webClient.post().uri("").contentType(MediaType.APPLICATION_JSON)
+					.body(Mono.just(libro), Libro.class).retrieve()
+					.onStatus(HttpStatusCode::is4xxClientError,
+							response -> response.bodyToMono(String.class)
+									.doOnNext(body -> System.err.println("Error 4xx: " + body)).then(Mono.empty()))
+					.onStatus(HttpStatusCode::is5xxServerError,
+							response -> response.bodyToMono(String.class)
+									.doOnNext(body -> System.err.println("Error 5xx: " + body)).then(Mono.empty()))
+					.toBodilessEntity().map(response -> {
+						if (response.getHeaders().getLocation() != null) {
+							return response.getHeaders().getLocation().toString();
+						} else {
+							throw new RuntimeException("No se recibió una URL en la cabecera Location");
+						}
+					}).block();
+			if (referencia != null) {
+				System.out.println(referencia);
+			}
+		} catch (RuntimeException e) {
+			System.err.println("Error: " + e.getMessage());
+		}
+	}
 
-    public Libro getLibroById(Integer id) {
-        return webClient.get()
-                .uri("/{id}", id)
-                .retrieve()
-                .onStatus(status -> status == HttpStatusCode.valueOf(404), 
-                    response -> Mono.empty())
-                .bodyToMono(Libro.class)
-                .block();
-    }
+	public void getLibroById(int libroId) {
+		Libro libro = webClient.get().uri("/" + libroId).retrieve()
+				.onStatus(HttpStatusCode::is4xxClientError,
+						response -> response.bodyToMono(String.class)
+								.doOnNext(body -> System.err.println("Error 4xx: " + body)).then(Mono.empty()))
+				.onStatus(HttpStatusCode::is5xxServerError,
+						response -> response.bodyToMono(String.class)
+								.doOnNext(body -> System.err.println("Error 5xx: " + body)).then(Mono.empty()))
+				.bodyToMono(Libro.class).block();
 
-    public PageLibro getLibrosFiltered(String contains, boolean available, int page, int size) {
-        return webClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .queryParam("contains", contains)
-                        .queryParam("available", available)
-                        .queryParam("page", page)
-                        .queryParam("size", size)
-                        .build())
-                .retrieve()
-                .bodyToMono(PageLibro.class)
-                .block();
-    }
+		if (libro != null) {
+			if (libro.get_links() != null) {
+				Href selfLink = libro.get_links().getSelf();
+				if (selfLink != null) {
+					System.out.println("Enlace: " + selfLink.getHref());
+				} else {
+					System.out.println("El libro no tiene enlace 'self'.");
+				}
+			}
+		} else {
+			System.out.println("Libro no encontrado.");
+		}
+	}
 
-    public boolean deleteLibro(Integer id) {
-        return webClient.delete()
-                .uri("/{id}", id)
-                .retrieve()
-                .onStatus(status -> status == HttpStatusCode.valueOf(404), 
-                    response -> Mono.empty())
-                .toBodilessEntity()
-                .block() != null;
-    }
+	public void getLibrosFiltered(int page, int size) {
+		PageLibro libros = webClient.get().uri("?page={page}&size={size}", page, size).retrieve()
+				.onStatus(HttpStatusCode::is4xxClientError,
+						response -> response.bodyToMono(String.class)
+								.doOnNext(body -> System.err.println("Error 4xx: " + body)).then(Mono.empty()))
+				.onStatus(HttpStatusCode::is5xxServerError,
+						response -> response.bodyToMono(String.class)
+								.doOnNext(body -> System.err.println("Error 5xx: " + body)).then(Mono.empty()))
+				.bodyToMono(PageLibro.class).block();
 
-    public boolean updateLibro(Integer id, Libro libro) {
-        return webClient.put()
-                .uri("/{id}", id)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(Mono.just(libro), Libro.class)
-                .retrieve()
-                .onStatus(status -> status == HttpStatusCode.valueOf(404), 
-                    response -> Mono.empty())
-                .toBodilessEntity()
-                .block() != null;
-    }
+		System.out.println("Total de libros: " + libros.getPage().getTotalElements());
+		System.out.println("Página actual: " + libros.getPage().getNumber());
+		System.out.println("Tamaño página: " + libros.getPage().getSize());
+		System.out.println("Número de páginas: " + libros.getPage().getTotalPages());
+		System.out.println("**********************");
+		System.out.println("Links");
+
+		if (libros.get_links().getFirst() != null) {
+			System.out.println("First: " + libros.get_links().getFirst().getHref());
+		} else if (libros.get_links().getSelf() != null) {
+			System.out.println("First: " + libros.get_links().getSelf().getHref());
+		} else if (libros.get_links().getNext() != null) {
+			System.out.println("Next: " + libros.get_links().getNext().getHref());
+		} else if (libros.get_links().getLast() != null) {
+			System.out.println("Last: " + libros.get_links().getLast().getHref());
+		}
+
+		System.out.println("**********************");
+		System.out.println("Libros");
+		for (Libro libro : libros.get_embedded().getLibroList()) {
+			System.out.println("El libro con id: " + libro.getId() + " y titulo: " + libro.getTitulo()
+					+ " se encuentra disponible en el enlace: " + libro.get_links().getSelf().getHref());
+		}
+	}
+
+	public void updateLibro(int libroId, String titulo, String autores, String isbn, String edicion, String editorial) {
+		Libro libro = new Libro();
+		libro.setId(libroId);
+		libro.setTitulo(titulo);
+		libro.setAutores(autores);
+		libro.setIsbn(isbn);
+		libro.setEdicion(edicion);
+		libro.setEditorial(editorial);
+
+		webClient.put().uri("/{id}", libroId).contentType(MediaType.APPLICATION_JSON)
+				.body(Mono.just(libro), Libro.class).retrieve()
+				.onStatus(HttpStatusCode::is4xxClientError,
+						response -> response.bodyToMono(String.class)
+								.doOnNext(body -> System.err.println("Error 4xx: " + body)).then(Mono.empty()))
+				.onStatus(HttpStatusCode::is5xxServerError,
+						response -> response.bodyToMono(String.class)
+								.doOnNext(body -> System.err.println("Error 5xx: " + body)).then(Mono.empty()))
+				.toBodilessEntity().block();
+	}
+
+	public void deleteLibro(Integer libroId) {
+		webClient.delete().uri("/{id}", libroId).retrieve()
+				.onStatus(HttpStatusCode::is4xxClientError,
+						response -> response.bodyToMono(String.class)
+								.doOnNext(body -> System.err.println("Error 4xx: " + body)).then(Mono.empty()))
+				.onStatus(HttpStatusCode::is5xxServerError,
+						response -> response.bodyToMono(String.class)
+								.doOnNext(body -> System.err.println("Error 5xx: " + body)).then(Mono.empty()))
+				.toBodilessEntity().block();
+	}
 }
