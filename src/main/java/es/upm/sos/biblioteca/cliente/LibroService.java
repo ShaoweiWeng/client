@@ -10,9 +10,9 @@ import reactor.core.publisher.Mono;
 public class LibroService {
 	private WebClient webClient = WebClient.builder().baseUrl("http://localhost:8080/api/libro").build();
 
-	public void addLibro(Libro libro) {
+	public void addLibro(Libro libro, String tipo) {
 		try {
-			String referencia = webClient.post().uri("").contentType(MediaType.APPLICATION_JSON)
+			String referencia = webClient.post().uri("").contentType(MediaType.APPLICATION_JSON).contentType(MediaType.valueOf(tipo))
 					.body(Mono.just(libro), Libro.class).retrieve()
 					.onStatus(HttpStatusCode::is4xxClientError,
 							response -> response.bodyToMono(String.class)

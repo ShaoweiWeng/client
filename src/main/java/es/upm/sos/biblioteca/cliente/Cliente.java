@@ -19,14 +19,24 @@ public class Cliente {
 				"ANAYA MULTIMEDIA");
 		Libro libroValido2 = new Libro("Libro2", "Autor2", "2ª edición", "9788441542222", "Editorial2");
 		System.out.println("#### Add libro válido (201) ####");
-		service.addLibro(libroValido1);
-		service.addLibro(libroValido2);
+		service.addLibro(libroValido1,null);
+		service.addLibro(libroValido2,null);
 		System.out.println();
 
 		// Test 400 Bad Request
 		Libro libroInvalido = new Libro(null, "Autor", "edicion", "ISBN", "Editorial");
 		System.out.println("#### Add libro inválido (400) ####");
-		service.addLibro(libroInvalido);
+		service.addLibro(libroInvalido,null);
+		System.out.println();
+
+		// Test 409 Conflict
+		System.out.println("#### Add libro duplicado (409) ####");
+		service.addLibro(libroValido1,null);
+		System.out.println();
+
+		// Test 415 Unsupported Media Type
+		System.out.println("#### Add libro con media type no soportado (415) ####");
+		service.addLibro(libroValido2, "application/atom+xml");
 		System.out.println();
 	}
 
