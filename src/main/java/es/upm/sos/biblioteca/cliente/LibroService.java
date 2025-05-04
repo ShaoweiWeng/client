@@ -46,7 +46,8 @@ public class LibroService {
 				.bodyToMono(Libro.class).block();
 
 		if (libro != null) {
-			System.out.println("El libro con id: " + libro.getId() + " y titulo: " + libro.getTitulo());
+			System.out.println("ID: " + libro.getId());
+			System.out.println("Título: " + libro.getTitulo());
 			System.out.println("Autores: " + libro.getAutores());
 			System.out.println("ISBN: " + libro.getIsbn());
 			System.out.println("Edicion: " + libro.getEdicion());
@@ -88,8 +89,8 @@ public class LibroService {
 		System.out.println("**********************");
 		System.out.println("Libros");
 		for (Libro libro : libros.get_embedded().getLibroList()) {
-			System.out.println("El libro con id: " + libro.getId() + " y titulo: " + libro.getTitulo()
-					+ " se encuentra disponible en el enlace: " + libro.get_links().getSelf().getHref());
+			System.out.println("El libro con id: |" + libro.getId() + "| y titulo: |" + libro.getTitulo()
+					+ "| se encuentra disponible en el enlace: " + libro.get_links().getSelf().getHref());
 		}
 	}
 
