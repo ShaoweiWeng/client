@@ -35,10 +35,12 @@ public class Cliente {
 		Libro libroValido1 = new Libro("Libro1", "Autor1", "1ª edición", "9788441541111", "Editorial1");
 		Libro libroValido2 = new Libro("Libro2", "Autor2", "2ª edición", "9788441542222", "Editorial2");
 		Libro libroValido3 = new Libro("Libro3", "Autor3", "3ª edición", "9788441543333", "Editorial3");
+		Libro libroValido4 = new Libro("Libro4", "Autor4", "4ª edición", "9788441544444", "Editorial4");
 		System.out.println("#### Add libro válido (201) ####");
 		libroService.addLibro(libroValido1);
 		libroService.addLibro(libroValido2);
 		libroService.addLibro(libroValido3);
+		libroService.addLibro(libroValido4);
 		System.out.println();
 
 		// Test 400 Bad Request

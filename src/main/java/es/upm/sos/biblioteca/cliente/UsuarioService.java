@@ -84,11 +84,14 @@ public class UsuarioService {
 
 		if (usuarios.get_links().getFirst() != null) {
 			System.out.println("First: " + usuarios.get_links().getFirst().getHref());
-		} else if (usuarios.get_links().getSelf() != null) {
+		}
+		if (usuarios.get_links().getSelf() != null) {
 			System.out.println("Self: " + usuarios.get_links().getSelf().getHref());
-		} else if (usuarios.get_links().getNext() != null) {
+		}
+		if (usuarios.get_links().getNext() != null) {
 			System.out.println("Next: " + usuarios.get_links().getNext().getHref());
-		} else if (usuarios.get_links().getLast() != null) {
+		}
+		if (usuarios.get_links().getLast() != null) {
 			System.out.println("Last: " + usuarios.get_links().getLast().getHref());
 		}
 
@@ -141,7 +144,7 @@ public class UsuarioService {
 						if (response.getHeaders().getLocation() != null) {
 							return response.getHeaders().getLocation().toString();
 						} else {
-							throw new RuntimeException("No se recibió la URL del préstamo");
+							throw new RuntimeException("");
 						}
 					}).block();
 			if (referencia != null) {
@@ -205,11 +208,14 @@ public class UsuarioService {
 
 		if (prestamos.get_links().getFirst() != null) {
 			System.out.println("First: " + prestamos.get_links().getFirst().getHref());
-		} else if (prestamos.get_links().getSelf() != null) {
+		}
+		if (prestamos.get_links().getSelf() != null) {
 			System.out.println("Self: " + prestamos.get_links().getSelf().getHref());
-		} else if (prestamos.get_links().getNext() != null) {
+		}
+		if (prestamos.get_links().getNext() != null) {
 			System.out.println("Next: " + prestamos.get_links().getNext().getHref());
-		} else if (prestamos.get_links().getLast() != null) {
+		}
+		if (prestamos.get_links().getLast() != null) {
 			System.out.println("Last: " + prestamos.get_links().getLast().getHref());
 		}
 
@@ -249,11 +255,14 @@ public class UsuarioService {
 
 		if (prestamos.get_links().getFirst() != null) {
 			System.out.println("First: " + prestamos.get_links().getFirst().getHref());
-		} else if (prestamos.get_links().getSelf() != null) {
+		}
+		if (prestamos.get_links().getSelf() != null) {
 			System.out.println("Self: " + prestamos.get_links().getSelf().getHref());
-		} else if (prestamos.get_links().getNext() != null) {
+		}
+		if (prestamos.get_links().getNext() != null) {
 			System.out.println("Next: " + prestamos.get_links().getNext().getHref());
-		} else if (prestamos.get_links().getLast() != null) {
+		}
+		if (prestamos.get_links().getLast() != null) {
 			System.out.println("Last: " + prestamos.get_links().getLast().getHref());
 		}
 

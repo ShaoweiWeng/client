@@ -78,11 +78,14 @@ public class LibroService {
 
 		if (libros.get_links().getFirst() != null) {
 			System.out.println("First: " + libros.get_links().getFirst().getHref());
-		} else if (libros.get_links().getSelf() != null) {
+		}
+		if (libros.get_links().getSelf() != null) {
 			System.out.println("First: " + libros.get_links().getSelf().getHref());
-		} else if (libros.get_links().getNext() != null) {
+		}
+		if (libros.get_links().getNext() != null) {
 			System.out.println("Next: " + libros.get_links().getNext().getHref());
-		} else if (libros.get_links().getLast() != null) {
+		}
+		if (libros.get_links().getLast() != null) {
 			System.out.println("Last: " + libros.get_links().getLast().getHref());
 		}
 
