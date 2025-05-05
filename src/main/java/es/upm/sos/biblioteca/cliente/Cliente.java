@@ -138,7 +138,6 @@ public class Cliente {
 		// Test 200 OK
 		System.out.println("#### Get todos los usuarios (200) ####");
 		usuarioService.getUsuariosFiltered(0, 10);
-		usuarioService.getUsuariosFiltered(1, 10);
 		System.out.println();
 	}
 
