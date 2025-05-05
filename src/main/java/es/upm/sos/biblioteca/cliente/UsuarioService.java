@@ -9,6 +9,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import es.upm.sos.biblioteca.cliente.model.DTO;
+import es.upm.sos.biblioteca.cliente.model.Libro;
 import es.upm.sos.biblioteca.cliente.model.PagePrestamo;
 import es.upm.sos.biblioteca.cliente.model.PageUsuario;
 import es.upm.sos.biblioteca.cliente.model.Prestamo;
@@ -98,6 +99,16 @@ public class UsuarioService {
 		}
 
 		System.out.println("**********************");
+		System.out.println("Usuarios");
+		for (Usuario usuario : usuarios.get_embedded().getUsuarioList()) {
+			System.out.println(
+				"El usuario con id: |" + usuario.getId() +
+				"| y nombre: |" + usuario.getNombre() +
+				"| matrícula: |" + usuario.getMatricula() +
+				"| se encuentra disponible en el enlace: " +
+				usuario.get_links().getSelf().getHref()
+			);
+		}
 
 	}
 
