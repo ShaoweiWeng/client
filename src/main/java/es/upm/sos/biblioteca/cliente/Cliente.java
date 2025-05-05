@@ -240,18 +240,18 @@ public class Cliente {
 		usuarioService.getHistorialPrestamos(999, 0, 5);
 		System.out.println();
 	}
-	
+
 	private static void testGetUsuarioInfo() {
 		// Test 200 OK
-        System.out.println("#### Obtener información de usuario existente (200) ####");
-        usuarioService.getUsuarioInfo(1);
-        System.out.println();
+		System.out.println("#### Obtener información de usuario existente (200) ####");
+		usuarioService.getUsuarioInfo(1);
+		System.out.println();
 
-        // Test 404 Not Found
-        System.out.println("#### Obtener información de usuario inexistente (404) ####");
-        usuarioService.getUsuarioInfo(999);
-        System.out.println();
-    }
+		// Test 404 Not Found
+		System.out.println("#### Obtener información de usuario inexistente (404) ####");
+		usuarioService.getUsuarioInfo(999);
+		System.out.println();
+	}
 
 	private static void testGetPrestamoById() {
 		// Test 200 OK

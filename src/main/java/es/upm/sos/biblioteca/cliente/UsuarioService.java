@@ -12,7 +12,9 @@ import es.upm.sos.biblioteca.cliente.model.DTO;
 import es.upm.sos.biblioteca.cliente.model.PagePrestamo;
 import es.upm.sos.biblioteca.cliente.model.PageUsuario;
 import es.upm.sos.biblioteca.cliente.model.Prestamo;
+import es.upm.sos.biblioteca.cliente.model.PrestamoInfo;
 import es.upm.sos.biblioteca.cliente.model.Usuario;
+import es.upm.sos.biblioteca.cliente.model.UsuarioInfo;
 import reactor.core.publisher.Mono;
 
 public class UsuarioService {
@@ -276,14 +278,60 @@ public class UsuarioService {
 	}
 
 	public void getUsuarioInfo(int usuarioId) {
-		getUsuarioById(usuarioId);
+		try {
+			UsuarioInfo usuarioInfo = webClient.get().uri("/{id}/info", usuarioId).retrieve()
+					.onStatus(HttpStatusCode::is4xxClientError,
+							response -> response.bodyToMono(String.class)
+									.doOnNext(body -> System.err.println("Error 4xx: " + body)).then(Mono.empty()))
+					.onStatus(HttpStatusCode::is5xxServerError,
+							response -> response.bodyToMono(String.class)
+									.doOnNext(body -> System.err.println("Error 5xx: " + body)).then(Mono.empty()))
+					.bodyToMono(UsuarioInfo.class).block();
 
-		System.out.println("**********************");
-		System.out.println("Préstamos activos:");
-		getPrestamosActuales(usuarioId, null, 0, 5);
+			if (usuarioInfo != null) {
+				System.out.println("\n=== Información del Usuario ===");
+				System.out.println("ID: " + usuarioInfo.getUsuario().getId());
+				System.out.println("Nombre: " + usuarioInfo.getUsuario().getNombre());
+				System.out.println("Matrícula: " + usuarioInfo.getUsuario().getMatricula());
+				System.out.println("Fecha de nacimiento: " + usuarioInfo.getUsuario().getFecha_nacimiento());
+				System.out.println("Email: " + usuarioInfo.getUsuario().getEmail());
+				System.out.println("Sancionado hasta: " + usuarioInfo.getUsuario().getSancionado_hasta());
 
-		System.out.println("**********************");
-		System.out.println("Historial de préstamos:");
-		getHistorialPrestamos(usuarioId, 0, 5);
+				System.out.println("\n--- Préstamos Activos ---");
+				if (usuarioInfo.getPrestamosActivos() != null && !usuarioInfo.getPrestamosActivos().isEmpty()) {
+					for (PrestamoInfo prestamo : usuarioInfo.getPrestamosActivos()) {
+						printPrestamoInfo(prestamo);
+					}
+				} else {
+					System.out.println("No tiene préstamos activos");
+				}
+
+				System.out.println("\n--- Últimos Préstamos Devueltos ---");
+				if (usuarioInfo.getUltimosPrestamosDevueltos() != null
+						&& !usuarioInfo.getUltimosPrestamosDevueltos().isEmpty()) {
+					for (PrestamoInfo prestamo : usuarioInfo.getUltimosPrestamosDevueltos()) {
+						printPrestamoInfo(prestamo);
+					}
+				} else {
+					System.out.println("No hay préstamos históricos");
+				}
+			}
+
+		} catch (RuntimeException e) {
+			System.err.println("Error al obtener información del usuario: " + e.getMessage());
+		}
+	}
+
+	private void printPrestamoInfo(PrestamoInfo prestamo) {
+		System.out.println("\nTitulo: " + prestamo.getLibro().getTitulo());
+		System.out.println("Autores: " + prestamo.getLibro().getAutores());
+		System.out.println("Edicion: " + prestamo.getLibro().getEdicion());
+		System.out.println("ISBN: " + prestamo.getLibro().getIsbn());
+		System.out.println("Editorial: " + prestamo.getLibro().getEditorial());
+		System.out.println("Fecha préstamo: " + prestamo.getFecha_prestamo());
+		System.out.println("Fecha devolución tope: " + prestamo.getFecha_devolucion_tope());
+		if (prestamo.getFecha_devolucion() != null) {
+			System.out.println("Fecha devolución: " + prestamo.getFecha_devolucion());
+		}
 	}
 }
